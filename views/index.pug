@@ -1,0 +1,12 @@
+extends layout 
+
+block content
+    h1 #{title}
+    ul
+        each article, i in articles 
+            li
+                h2(class="blue")= article.title
+                hr
+                h4(style="color: crimson;")=article.author 
+                p=article.content
+    br
