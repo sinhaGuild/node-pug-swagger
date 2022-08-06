@@ -2,45 +2,46 @@ require("colors");
 require("dotenv").config();
 const { urlencoded } = require("express");
 const express = require("express");
+const morgan = require("morgan");
+const swui = require("swagger-ui-express");
 const path = require("path");
 const PORT = process.env.PORT || 4001;
+
+const articles = [
+  {
+    id: 1,
+    title: "Picassos Blue Period",
+    author: "Picasso, 1792",
+    content:
+      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Distinctio deserunt maiores fuga architecto odio adipisci nulla consectetur explicabo, omnis esse iure, eaque quibusdam deleniti.",
+  },
+  {
+    id: 3,
+    title: "Caravaggios Dream",
+    author: "Caravagio, 1780",
+    content:
+      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Distinctio deserunt maiores fuga architecto odio adipisci nulla consectetur explicabo, omnis esse iure, eaque quibusdam deleniti.",
+  },
+  {
+    id: 2,
+    title: "Sorolla Beaches",
+    author: "Sorolla, 1876",
+    content:
+      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Distinctio deserunt maiores fuga architecto odio adipisci nulla consectetur explicabo, omnis esse iure, eaque quibusdam deleniti.",
+  },
+];
 
 const app = express();
 
 /** Middleware */
 app.use(express.json());
-app.use(urlencoded({ extended: false }));
+app.use(morgan("dev"));
 
-/** Load a view engine */
+/** Load a view engine for PUG */
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
-
-/** Routes */
+/** Home Route for PUG */
 app.get("/", (req, res) => {
-  const articles = [
-    {
-      id: 1,
-      title: "Picassos Blue Period",
-      author: "Picasso, 1792",
-      content:
-        "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Distinctio deserunt maiores fuga architecto odio adipisci nulla consectetur explicabo, omnis esse iure, eaque quibusdam deleniti.",
-    },
-    {
-      id: 3,
-      title: "Caravaggios Dream",
-      author: "Caravagio, 1780",
-      content:
-        "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Distinctio deserunt maiores fuga architecto odio adipisci nulla consectetur explicabo, omnis esse iure, eaque quibusdam deleniti.",
-    },
-    {
-      id: 2,
-      title: "Sorolla Beaches",
-      author: "Sorolla, 1876",
-      content:
-        "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Distinctio deserunt maiores fuga architecto odio adipisci nulla consectetur explicabo, omnis esse iure, eaque quibusdam deleniti.",
-    },
-  ];
-
   res.render("index", {
     title: "Index.js",
     status: `Server is listening on PORT ${PORT}...`,
@@ -48,11 +49,15 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/articles/add", (req, res) => {
-  res.render("add_article", {
-    title: "Add Article",
-  });
-});
+/** Routes */
+app.use("/articles", require("./routes/coreRoute"));
+
+/** Docs */
+app.use(
+  "/docs",
+  swui.serve,
+  swui.setup(require("./docs/setupSwagger"), { explorer: true })
+);
 
 /** Start the server */
 app.listen(PORT, () =>

@@ -1,6 +1,11 @@
 body {
     background: oldlace;
-    font-family: "Quicksand", sans-serif;
+    font-family: "Poppins", sans-serif;
+}
+
+.swagger-ui body {
+    margin: 0;
+    background: #fafafa
 }
 
 ul {
