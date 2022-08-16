@@ -5,6 +5,7 @@ const express = require("express");
 const morgan = require("morgan");
 const swui = require("swagger-ui-express");
 const path = require("path");
+const connectDB = require("./db/mongo");
 const PORT = process.env.PORT || 4001;
 
 const articles = [
@@ -60,6 +61,15 @@ app.use(
 );
 
 /** Start the server */
-app.listen(PORT, () =>
-  console.log(`Server is listening on PORT ${PORT}..`.cyan.italic)
-);
+const start = async () => {
+  try {
+    await connectDB(process.env.MONGO_URI);
+    app.listen(PORT, () =>
+      console.log(`Server is listening on PORT ${PORT}...`.bgMagenta.bold)
+    );
+  } catch (error) {
+    console.log(`Server failed to start with err ${error}.`.bgRed.bold);
+  }
+};
+
+start();
